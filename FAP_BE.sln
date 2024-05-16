@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAP_BE", "FAP_BE.csproj", "{AA16D41A-1741-4BA8-8604-B9B738E48367}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA16D41A-1741-4BA8-8604-B9B738E48367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA16D41A-1741-4BA8-8604-B9B738E48367}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA16D41A-1741-4BA8-8604-B9B738E48367}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA16D41A-1741-4BA8-8604-B9B738E48367}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5547442A-A937-4DD2-8E1B-ED82F5B93F4F}
+	EndGlobalSection
+EndGlobal
