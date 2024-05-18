@@ -1,3 +1,4 @@
+using FAP_BE.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FAP_BE
@@ -9,8 +10,8 @@ namespace FAP_BE
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-//            builder.Services.AddDbContext<NorthWindContext>(option =>
-//option.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
+            builder.Services.AddDbContext<FAP_PRN231Context>(option =>
+            option.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
