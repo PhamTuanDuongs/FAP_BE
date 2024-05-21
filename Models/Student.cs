@@ -8,7 +8,6 @@ namespace FAP_BE.Models
         public Student()
         {
             Attendances = new HashSet<Attendance>();
-            Groups = new HashSet<Group>();
         }
 
         public int Id { get; set; }
@@ -17,7 +16,5 @@ namespace FAP_BE.Models
 
         public virtual MetaData MetaData { get; set; } = null!;
         public virtual ICollection<Attendance> Attendances { get; set; }
-
-        public virtual ICollection<Group> Groups { get; set; }
     }
 }

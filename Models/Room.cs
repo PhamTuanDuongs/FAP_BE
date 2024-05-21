@@ -7,11 +7,11 @@ namespace FAP_BE.Models
     {
         public Room()
         {
-            Sessions = new HashSet<Session>();
+            Schedules = new HashSet<Schedule>();
         }
 
         public string Name { get; set; } = null!;
 
-        public virtual ICollection<Session> Sessions { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }

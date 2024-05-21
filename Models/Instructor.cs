@@ -7,7 +7,7 @@ namespace FAP_BE.Models
     {
         public Instructor()
         {
-            Sessions = new HashSet<Session>();
+            Schedules = new HashSet<Schedule>();
         }
 
         public int Id { get; set; }
@@ -15,6 +15,6 @@ namespace FAP_BE.Models
         public int MetaDataId { get; set; }
 
         public virtual MetaData MetaData { get; set; } = null!;
-        public virtual ICollection<Session> Sessions { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }
