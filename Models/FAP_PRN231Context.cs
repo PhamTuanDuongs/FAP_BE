@@ -20,7 +20,7 @@ namespace FAP_BE.Models
         public virtual DbSet<Attendance> Attendances { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
         public virtual DbSet<Instructor> Instructors { get; set; } = null!;
-        public virtual DbSet<MetaDatum> MetaData { get; set; } = null!;
+        public virtual DbSet<Metadata> MetaData { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Room> Rooms { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
@@ -144,7 +144,7 @@ namespace FAP_BE.Models
                     .HasConstraintName("FK__Instructo__MetaD__49C3F6B7");
             });
 
-            modelBuilder.Entity<MetaDatum>(entity =>
+            modelBuilder.Entity<Metadata>(entity =>
             {
                 entity.HasKey(e => e.MetaDataId)
                     .HasName("PK__Meta_Dat__429BA08D26E459CC");

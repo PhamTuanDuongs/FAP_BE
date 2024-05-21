@@ -14,7 +14,7 @@ namespace FAP_BE.Models
         public string InstructorCode { get; set; } = null!;
         public int MetaDataId { get; set; }
 
-        public virtual MetaDatum MetaData { get; set; } = null!;
+        public virtual Metadata MetaData { get; set; } = null!;
         public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }
