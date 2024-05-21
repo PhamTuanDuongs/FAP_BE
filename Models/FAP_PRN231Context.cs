@@ -19,24 +19,20 @@ namespace FAP_BE.Models
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<Attendance> Attendances { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
-        public virtual DbSet<Group> Groups { get; set; } = null!;
         public virtual DbSet<Instructor> Instructors { get; set; } = null!;
-        public virtual DbSet<MetaData> MetaData { get; set; } = null!;
+        public virtual DbSet<MetaDatum> MetaData { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Room> Rooms { get; set; } = null!;
-        public virtual DbSet<Session> Sessions { get; set; } = null!;
+        public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<Student> Students { get; set; } = null!;
+        public virtual DbSet<Subject> Subjects { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                IConfiguration config = new ConfigurationBuilder()
-                              .SetBasePath(Directory.GetCurrentDirectory())
-                              .AddJsonFile("appsettings.json", true, true)
-                              .Build();
-                var strConn = config["ConnectionStrings:DB"];
-                optionsBuilder.UseSqlServer(strConn);
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("server=DESKTOP-D8JRM1T\\DUONG;database=FAP_PRN231;uid=sa;pwd=123;TrustServerCertificate=True;");
             }
         }
 
@@ -46,13 +42,13 @@ namespace FAP_BE.Models
             {
                 entity.ToTable("Account");
 
-                entity.HasIndex(e => e.MetaDataId, "UQ__Account__429BA08C9BA1BCD7")
+                entity.HasIndex(e => e.MetaDataId, "UQ__Account__429BA08C8A1CBF00")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Username, "UQ__Account__536C85E42BE88E6D")
+                entity.HasIndex(e => e.Username, "UQ__Account__536C85E4BFDD5503")
                     .IsUnique();
 
-                entity.HasIndex(e => e.RoleId, "UQ__Account__8AFACE1B459A1BEC")
+                entity.HasIndex(e => e.RoleId, "UQ__Account__8AFACE1BC8F02419")
                     .IsUnique();
 
                 entity.Property(e => e.Password)
@@ -78,79 +74,63 @@ namespace FAP_BE.Models
 
             modelBuilder.Entity<Attendance>(entity =>
             {
-                entity.HasKey(e => new { e.StudentCode, e.SessionId })
-                    .HasName("PK__Attendan__0357CF2C6F301D40");
+                entity.HasKey(e => new { e.StudentId, e.ScheduleId })
+                    .HasName("PK__Attendan__BB0D8E2DD0F2A81A");
 
                 entity.ToTable("Attendance");
 
-                entity.Property(e => e.StudentCode)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
+                entity.Property(e => e.Comment).HasMaxLength(225);
 
-                entity.Property(e => e.DateAttended).HasColumnType("date");
+                entity.Property(e => e.DateAttended).HasColumnType("datetime");
 
-                entity.Property(e => e.Time).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Session)
+                entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Attendances)
-                    .HasForeignKey(d => d.SessionId)
+                    .HasForeignKey(d => d.ScheduleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Attendanc__Sessi__60A75C0F");
+                    .HasConstraintName("FK__Attendanc__Sched__5BE2A6F2");
 
-                entity.HasOne(d => d.StudentCodeNavigation)
+                entity.HasOne(d => d.Student)
                     .WithMany(p => p.Attendances)
-                    .HasPrincipalKey(p => p.RoleNumber)
-                    .HasForeignKey(d => d.StudentCode)
+                    .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Attendanc__Stude__5FB337D6");
+                    .HasConstraintName("FK__Attendanc__Stude__5AEE82B9");
             });
 
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.HasKey(e => e.CourseCode)
-                    .HasName("PK__Course__FC00E0017D59C0D9");
-
                 entity.ToTable("Course");
 
-                entity.HasIndex(e => e.Name, "UQ__Course__737584F628659E1F")
+                entity.HasIndex(e => e.Code, "UQ__Course__A25C5AA7F742BF69")
                     .IsUnique();
 
-                entity.Property(e => e.CourseCode)
+                entity.Property(e => e.Code)
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Name)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-            });
+                entity.Property(e => e.EndDate).HasColumnType("date");
 
-            modelBuilder.Entity<Group>(entity =>
-            {
-                entity.ToTable("Group");
+                entity.Property(e => e.StartDate).HasColumnType("date");
 
-                entity.HasIndex(e => e.GroupCode, "UQ__Group__3B974380558A7AF0")
-                    .IsUnique();
+                entity.Property(e => e.TimeSlot)
+                    .HasMaxLength(5)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
-                entity.HasIndex(e => e.GroupName, "UQ__Group__6EFCD4340CECBECB")
-                    .IsUnique();
-
-                entity.Property(e => e.GroupCode)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupName)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
+                entity.HasOne(d => d.Subject)
+                    .WithMany(p => p.Courses)
+                    .HasForeignKey(d => d.SubjectId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Course__TimeSlot__534D60F1");
             });
 
             modelBuilder.Entity<Instructor>(entity =>
             {
                 entity.ToTable("Instructor");
 
-                entity.HasIndex(e => e.InstructorCode, "UQ__Instruct__321792F6D430519B")
+                entity.HasIndex(e => e.InstructorCode, "UQ__Instruct__321792F655B5F98E")
                     .IsUnique();
 
-                entity.HasIndex(e => e.MetaDataId, "UQ__Instruct__429BA08C25A40C19")
+                entity.HasIndex(e => e.MetaDataId, "UQ__Instruct__429BA08C5560F710")
                     .IsUnique();
 
                 entity.Property(e => e.InstructorCode)
@@ -164,14 +144,14 @@ namespace FAP_BE.Models
                     .HasConstraintName("FK__Instructo__MetaD__49C3F6B7");
             });
 
-            modelBuilder.Entity<MetaData>(entity =>
+            modelBuilder.Entity<MetaDatum>(entity =>
             {
                 entity.HasKey(e => e.MetaDataId)
-                    .HasName("PK__Meta_Dat__429BA08D047B6133");
+                    .HasName("PK__Meta_Dat__429BA08D26E459CC");
 
                 entity.ToTable("Meta_Data");
 
-                entity.HasIndex(e => e.Email, "UQ__Meta_Dat__A9D1053407A8B194")
+                entity.HasIndex(e => e.Email, "UQ__Meta_Dat__A9D10534CC60EFE4")
                     .IsUnique();
 
                 entity.Property(e => e.Address).HasMaxLength(100);
@@ -191,7 +171,7 @@ namespace FAP_BE.Models
             {
                 entity.ToTable("Role");
 
-                entity.HasIndex(e => e.Name, "UQ__Role__737584F6C3D96F9C")
+                entity.HasIndex(e => e.Name, "UQ__Role__737584F67100069D")
                     .IsUnique();
 
                 entity.Property(e => e.Name)
@@ -202,7 +182,7 @@ namespace FAP_BE.Models
             modelBuilder.Entity<Room>(entity =>
             {
                 entity.HasKey(e => e.Name)
-                    .HasName("PK__Room__737584F74D076408");
+                    .HasName("PK__Room__737584F77FEF8B19");
 
                 entity.ToTable("Room");
 
@@ -211,63 +191,43 @@ namespace FAP_BE.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<Session>(entity =>
+            modelBuilder.Entity<Schedule>(entity =>
             {
-                entity.ToTable("Session");
-
-                entity.Property(e => e.CourseCode)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
+                entity.ToTable("Schedule");
 
                 entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.Property(e => e.GroupCode)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.InstructorCode)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.Room)
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.CourseCodeNavigation)
-                    .WithMany(p => p.Sessions)
-                    .HasForeignKey(d => d.CourseCode)
+                entity.HasOne(d => d.Course)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.CourseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Session__CourseC__5CD6CB2B");
+                    .HasConstraintName("FK__Schedule__Course__5812160E");
 
-                entity.HasOne(d => d.GroupCodeNavigation)
-                    .WithMany(p => p.Sessions)
-                    .HasPrincipalKey(p => p.GroupCode)
-                    .HasForeignKey(d => d.GroupCode)
+                entity.HasOne(d => d.Instructor)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.InstructorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Session__GroupCo__59FA5E80");
-
-                entity.HasOne(d => d.InstructorCodeNavigation)
-                    .WithMany(p => p.Sessions)
-                    .HasPrincipalKey(p => p.InstructorCode)
-                    .HasForeignKey(d => d.InstructorCode)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Session__Instruc__5AEE82B9");
+                    .HasConstraintName("FK__Schedule__Instru__5629CD9C");
 
                 entity.HasOne(d => d.RoomNavigation)
-                    .WithMany(p => p.Sessions)
+                    .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.Room)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Session__Room__5BE2A6F2");
+                    .HasConstraintName("FK__Schedule__Room__571DF1D5");
             });
 
             modelBuilder.Entity<Student>(entity =>
             {
                 entity.ToTable("Student");
 
-                entity.HasIndex(e => e.MetaDataId, "UQ__Student__429BA08C22452019")
+                entity.HasIndex(e => e.MetaDataId, "UQ__Student__429BA08C677A21C4")
                     .IsUnique();
 
-                entity.HasIndex(e => e.RoleNumber, "UQ__Student__486BE74958C3D6D0")
+                entity.HasIndex(e => e.RoleNumber, "UQ__Student__486BE7499774320D")
                     .IsUnique();
 
                 entity.Property(e => e.RoleNumber)
@@ -279,19 +239,25 @@ namespace FAP_BE.Models
                     .HasForeignKey<Student>(d => d.MetaDataId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Student__MetaDat__44FF419A");
+            });
 
-                entity.HasMany(d => d.Groups)
-                    .WithMany(p => p.Students)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "StudentGroup",
-                        l => l.HasOne<Group>().WithMany().HasForeignKey("GroupId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Student_G__Group__5165187F"),
-                        r => r.HasOne<Student>().WithMany().HasForeignKey("StudentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Student_G__Stude__5070F446"),
-                        j =>
-                        {
-                            j.HasKey("StudentId", "GroupId").HasName("PK__Student___838C84AFF527CB62");
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.ToTable("Subject");
 
-                            j.ToTable("Student_Group");
-                        });
+                entity.HasIndex(e => e.Name, "UQ__Subject__737584F671C70D24")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Code, "UQ__Subject__A25C5AA7E5FEA18F")
+                    .IsUnique();
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -7,12 +7,17 @@ namespace FAP_BE.Models
     {
         public Course()
         {
-            Sessions = new HashSet<Session>();
+            Schedules = new HashSet<Schedule>();
         }
 
-        public string CourseCode { get; set; } = null!;
-        public string Name { get; set; } = null!;
+        public int Id { get; set; }
+        public string Code { get; set; } = null!;
+        public int SubjectId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string TimeSlot { get; set; } = null!;
 
-        public virtual ICollection<Session> Sessions { get; set; }
+        public virtual Subject Subject { get; set; } = null!;
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }
