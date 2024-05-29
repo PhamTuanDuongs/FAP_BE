@@ -5,7 +5,13 @@ namespace FAP_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SessionController : ControllerBase
+    public class CourseController : ControllerBase
     {
+        [HttpGet("get")]
+        public IActionResult Get()
+        {
+
+            return Ok("Hello");
+        }
     }
 }
