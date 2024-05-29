@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FAP_BE.Models
 {
-    public partial class MetaData
+    public partial class Metadata
     {
         public int MetaDataId { get; set; }
         public string Name { get; set; } = null!;
