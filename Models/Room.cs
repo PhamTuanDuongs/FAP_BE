@@ -10,8 +10,10 @@ namespace FAP_BE.Models
             Schedules = new HashSet<Schedule>();
         }
 
-        public string Name { get; set; } = null!;
+        public string Name { get; set; }
 
         public virtual ICollection<Schedule> Schedules { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
+
     }
 }

@@ -7,7 +7,7 @@ namespace FAP_BE.Models
     {
         public int StudentId { get; set; }
         public int ScheduleId { get; set; }
-        public DateTime DateAttended { get; set; }
+        public DateTime? DateAttended { get; set; }
         public int? Status { get; set; }
         public string? Comment { get; set; }
 

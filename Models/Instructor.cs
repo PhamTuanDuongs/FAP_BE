@@ -16,5 +16,6 @@ namespace FAP_BE.Models
 
         public virtual Metadata MetaData { get; set; } = null!;
         public virtual ICollection<Schedule> Schedules { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
     }
 }

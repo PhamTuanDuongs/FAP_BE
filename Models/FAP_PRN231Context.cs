@@ -26,6 +26,7 @@ namespace FAP_BE.Models
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<Student> Students { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
+        public virtual DbSet<StudentCourse> StudentCourse { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -47,10 +48,6 @@ namespace FAP_BE.Models
 
                 entity.HasIndex(e => e.Username, "UQ__Account__536C85E4BFDD5503")
                     .IsUnique();
-
-                entity.HasIndex(e => e.RoleId, "UQ__Account__8AFACE1BC8F02419")
-                    .IsUnique();
-
                 entity.Property(e => e.Password)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -110,7 +107,9 @@ namespace FAP_BE.Models
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
-
+                entity.Property(e => e.Room)
+                .HasMaxLength(30)
+                .IsUnicode(false);
                 entity.Property(e => e.TimeSlot)
                     .HasMaxLength(5)
                     .IsUnicode(false)
@@ -121,6 +120,12 @@ namespace FAP_BE.Models
                     .HasForeignKey(d => d.SubjectId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Course__TimeSlot__534D60F1");
+
+                entity.HasOne(d => d.RoomNavigation)
+                .WithMany(p => p.Courses)
+                .HasForeignKey(d => d.Room)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Course_Room");
             });
 
             modelBuilder.Entity<Instructor>(entity =>
@@ -260,6 +265,7 @@ namespace FAP_BE.Models
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<StudentCourse>().HasKey(ps => new { ps.StudentId, ps.CourseId });
             OnModelCreatingPartial(modelBuilder);
         }
 
