@@ -4,6 +4,6 @@ namespace FAP_BE.Repository
 {
     public interface ICourseRepository
     {
-        public bool AddNewCourse(CreateNewCourseDTO courseDTO);
+        public string AddNewCourse(CreateNewCourseDTO courseDTO);
     }
 }

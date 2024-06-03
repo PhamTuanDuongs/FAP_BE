@@ -18,6 +18,7 @@ namespace FAP_BE
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
             var app = builder.Build();
 
@@ -27,7 +28,12 @@ namespace FAP_BE
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();   
+            });
             app.UseAuthorization();
 
 
