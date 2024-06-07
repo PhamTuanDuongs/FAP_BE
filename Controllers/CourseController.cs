@@ -40,7 +40,7 @@ namespace FAP_BE.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("Add a failed product");
+                return BadRequest(new { status = 409, message = "Add a failed product" });
             }
         }
     }

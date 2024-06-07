@@ -20,6 +20,7 @@ namespace FAP_BE
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
+            builder.Services.AddSingleton<ITimetableRepository, TimtableRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

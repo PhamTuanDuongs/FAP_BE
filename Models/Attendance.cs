@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FAP_BE.DTOs;
+using System;
 using System.Collections.Generic;
 
 namespace FAP_BE.Models
