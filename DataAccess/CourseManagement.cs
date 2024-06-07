@@ -1,5 +1,7 @@
 ﻿using FAP_BE.DTOs;
 using FAP_BE.Models;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Globalization;
 
 namespace FAP_BE.DataAccess
 {
@@ -28,84 +30,74 @@ namespace FAP_BE.DataAccess
 
         public bool AddNewCourse(CreateNewCourseDTO courseDTO)
         {
-            try
+           using(IDbContextTransaction transaction = _context.Database.BeginTransaction())
             {
-                Course course = new Course();
-                course.Code = courseDTO.Code;
-                course.SubjectId = courseDTO.SubjectId;
-                course.StartDate = courseDTO.StartDate;
-                course.EndDate = courseDTO.EndDate;
-                course.InstructorId = courseDTO.instructorId;
-                course.TimeSlot = courseDTO.TimeSlot;
-                course.Room = courseDTO.Room;
-                _context.Courses.Add(course);
-                _context.SaveChanges();
-                List<StudentCourse> studentCourses = new List<StudentCourse>();
-                foreach (var s in courseDTO.Students)
+                try
                 {
-                    StudentCourse studentCourse = new StudentCourse();
-                    studentCourse.StudentId = s.Id;
-                    studentCourse.CourseId = course.Id;
-                    studentCourses.Add(studentCourse);
+                    Course course = new Course();
+                    course.Code = courseDTO.Code;
+                    course.SubjectId = courseDTO.SubjectId;
+                    course.StartDate = DateTime.Parse(courseDTO.StartDate);
+                    course.EndDate = DateTime.Parse(courseDTO.EndDate);
+                    course.InstructorId = courseDTO.instructorId;
+                    course.TimeSlot = courseDTO.TimeSlot;
+                    course.Room = courseDTO.Room;
+                    _context.Courses.Add(course);
+                    _context.SaveChanges();
+                    List<StudentCourse> studentCourses = new List<StudentCourse>();
+                    foreach (var s in courseDTO.Students)
+                    {
+                        StudentCourse studentCourse = new StudentCourse();
+                        studentCourse.StudentId = s.Id;
+                        studentCourse.CourseId = course.Id;
+                        studentCourses.Add(studentCourse);
+                    }
+                    AddStudentCourse(studentCourses);
+                    CheckSlot(course, course.TimeSlot[1], "13");
+                    CheckSlot(course, course.TimeSlot[2], "24");
+                    transaction.Commit();
+                    return true;
                 }
-                AddStudentCourse(studentCourses);
-
-
-                switch (course.TimeSlot[1])
+                catch (Exception ex)
                 {
-                    case '2':
-                        DateTime startDateForMonday = GetNextOrSameDay(course.StartDate, DayOfWeek.Monday);
-                        GenerateScheduleAndAttendanceForSlot1or3(startDateForMonday, course);
-                        break;
-                    case '3':
-                        DateTime startDateForTuseDay = GetNextOrSameDay(course.StartDate, DayOfWeek.Tuesday);
-                        GenerateScheduleAndAttendanceForSlot1or3(startDateForTuseDay, course);
-                        break;
-                    case '4':
-                        DateTime startDateForWed = GetNextOrSameDay(course.StartDate, DayOfWeek.Wednesday);
-                        GenerateScheduleAndAttendanceForSlot1or3(startDateForWed, course);
-                        break;
-                    case '5':
-                        DateTime startDateForThus = GetNextOrSameDay(course.StartDate, DayOfWeek.Thursday);
-                        GenerateScheduleAndAttendanceForSlot1or3(startDateForThus, course);
-                        break;
-                    case '6':
-                        DateTime startDateForFri = GetNextOrSameDay(course.StartDate, DayOfWeek.Friday);
-                        GenerateScheduleAndAttendanceForSlot1or3(startDateForFri, course);
-                        break;
+                    transaction.Rollback();
+                    return false;
                 }
-
-                switch (course.TimeSlot[2])
-                {
-                    case '2':
-                        DateTime startDateForMonday = GetNextOrSameDay(course.StartDate, DayOfWeek.Monday);
-                        GenerateScheduleAndAttendanceForSlot2or4(startDateForMonday, course);
-                        break;
-                    case '3':
-                        DateTime startDateForTuseDay = GetNextOrSameDay(course.StartDate, DayOfWeek.Tuesday);
-                        GenerateScheduleAndAttendanceForSlot2or4(startDateForTuseDay, course);
-                        break;
-                    case '4':
-                        DateTime startDateForWed = GetNextOrSameDay(course.StartDate, DayOfWeek.Wednesday);
-                        GenerateScheduleAndAttendanceForSlot2or4(startDateForWed, course);
-                        break;
-                    case '5':
-                        DateTime startDateForThus = GetNextOrSameDay(course.StartDate, DayOfWeek.Thursday);
-                        GenerateScheduleAndAttendanceForSlot2or4(startDateForThus, course);
-                        break;
-                    case '6':
-                        DateTime startDateForFri = GetNextOrSameDay(course.StartDate, DayOfWeek.Friday);
-                        GenerateScheduleAndAttendanceForSlot2or4(startDateForFri, course);
-                        break;
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
             }
         }
 
+
+        private void CheckSlot(Course course, char timeSlot, string slot)
+        {
+            switch (timeSlot)
+            {
+                case '2':
+                    DateTime startDateForMonday = GetNextOrSameDay(course.StartDate, DayOfWeek.Monday);
+                    if (slot == "13") GenerateScheduleAndAttendanceForSlot1or3(startDateForMonday, course);
+                    else GenerateScheduleAndAttendanceForSlot2or4(startDateForMonday, course);
+                    break;
+                case '3':
+                    DateTime startDateForTuseDay = GetNextOrSameDay(course.StartDate, DayOfWeek.Tuesday);
+                    if (slot == "13") GenerateScheduleAndAttendanceForSlot1or3(startDateForTuseDay, course);
+                    else GenerateScheduleAndAttendanceForSlot2or4(startDateForTuseDay, course);
+                    break;
+                case '4':
+                    DateTime startDateForWed = GetNextOrSameDay(course.StartDate, DayOfWeek.Wednesday);
+                    if (slot == "13") GenerateScheduleAndAttendanceForSlot1or3(startDateForWed, course);
+                    else GenerateScheduleAndAttendanceForSlot2or4(startDateForWed, course);
+                    break;
+                case '5':
+                    DateTime startDateForThus = GetNextOrSameDay(course.StartDate, DayOfWeek.Thursday);
+                    if (slot == "13") GenerateScheduleAndAttendanceForSlot1or3(startDateForThus, course);
+                    else GenerateScheduleAndAttendanceForSlot2or4(startDateForThus, course);
+                    break;
+                case '6':
+                    DateTime startDateForFri = GetNextOrSameDay(course.StartDate, DayOfWeek.Friday);
+                    if (slot == "13") GenerateScheduleAndAttendanceForSlot1or3(startDateForFri, course);
+                    else GenerateScheduleAndAttendanceForSlot2or4(startDateForFri, course);
+                    break;
+            }
+        }
         private DateTime GetNextOrSameDay(DateTime givenDate, DayOfWeek targetDay)
         {
             int givenWeekday = (int)givenDate.DayOfWeek;

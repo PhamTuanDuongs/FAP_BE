@@ -18,7 +18,9 @@ namespace FAP_BE
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
+            builder.Services.AddSingleton<ITimetableRepository, TimtableRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,7 +29,12 @@ namespace FAP_BE
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();   
+            });
             app.UseAuthorization();
 
 

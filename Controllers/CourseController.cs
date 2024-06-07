@@ -26,23 +26,21 @@ namespace FAP_BE.Controllers
             return Ok("Hello");
         }
 
-        [HttpPost("Add/{courseDTO}")]
+        [HttpPost("Add/{course}")]
 
-        public IActionResult Post([FromBody] CreateNewCourseDTO courseDTO)
+        public IActionResult Post([FromBody] CreateNewCourseDTO course)
         {
-//            delete from Attendance
-//delete from Schedule
-//delete from StudentCourse
-//delete from Course
             try
             {
-                if (_courseRepository.AddNewCourse(courseDTO)) return Ok();
-                return BadRequest("In Try");
+                string result = _courseRepository.AddNewCourse(course);
+                if (result.Equals("Add a new course successfully")) return Ok(new { status = 200, message = result });
+                if (result.Equals("Add a new course fail")) return Conflict(new { status = 409, message = result });
+                return Conflict(new { status = 409, message = result });
 
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);  
+                return BadRequest(new { status = 409, message = "Add a failed product" });
             }
         }
     }

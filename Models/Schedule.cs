@@ -17,6 +17,8 @@ namespace FAP_BE.Models
         public int Slot { get; set; }
         public DateTime Date { get; set; }
 
+        public bool Status { get; set; } = false;
+
         public virtual Course Course { get; set; } = null!;
         public virtual Instructor Instructor { get; set; } = null!;
         public virtual Room RoomNavigation { get; set; } = null!;
