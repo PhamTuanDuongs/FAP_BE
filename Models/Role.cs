@@ -8,6 +8,6 @@ namespace FAP_BE.Models
         public int RoleId { get; set; }
         public string Name { get; set; } = null!;
 
-        public virtual Account Account { get; set; } = null!;
+        public virtual List<Account> Account { get; set; } = null!;
     }
 }

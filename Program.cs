@@ -16,9 +16,15 @@ namespace FAP_BE
             option.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(StudentProfile).Assembly);
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors();
+
+            builder.Services.AddSingleton<IInstructorRepository, InstructorRepository>();
+            builder.Services.AddSingleton<IStudentRepository, StudentRepository>();
+            builder.Services.AddSingleton<ISubjectRepository, SubjectRepository>();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
             builder.Services.AddSingleton<ITimetableRepository, TimtableRepository>();
             var app = builder.Build();

@@ -54,6 +54,7 @@ namespace FAP_BE.Mappings
                         ManageSlot = s.Course.Subject.ManageSlot,
                     }
                 }));
+
         }
     }
 }
