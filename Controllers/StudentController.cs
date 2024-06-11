@@ -3,6 +3,7 @@ using FAP_BE.DTOs;
 using FAP_BE.Models;
 using FAP_BE.Repository;
 using FAP_BE.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace FAP_BE.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpGet("GetAllStudents")]
         public IActionResult GetAllStudents()
         {
@@ -37,6 +39,7 @@ namespace FAP_BE.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("GetStudentByRolenumber/{rolenumber}")]
         public IActionResult GetStudentByRolenumber(string rolenumber)
         {
