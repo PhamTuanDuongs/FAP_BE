@@ -54,6 +54,8 @@ namespace FAP_BE.Mappings
                         ManageSlot = s.Course.Subject.ManageSlot,
                     }
                 }));
+
+            CreateMap<Account, AccountInfoDTO>().ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name));
         }
     }
 }

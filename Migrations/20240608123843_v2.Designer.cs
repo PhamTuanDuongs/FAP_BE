@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FAP_BE.Migrations
 {
     [DbContext(typeof(FAP_PRN231Context))]
-    [Migration("20240607022319_v2")]
+    [Migration("20240608123843_v2")]
     partial class v2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,8 +52,7 @@ namespace FAP_BE.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.HasIndex("RoleId")
-                        .IsUnique();
+                    b.HasIndex("RoleId");
 
                     b.HasIndex(new[] { "MetaDataId" }, "UQ__Account__429BA08C8A1CBF00")
                         .IsUnique();
@@ -372,8 +371,8 @@ namespace FAP_BE.Migrations
                         .HasConstraintName("FK__Account__MetaDat__403A8C7D");
 
                     b.HasOne("FAP_BE.Models.Role", "Role")
-                        .WithOne("Account")
-                        .HasForeignKey("FAP_BE.Models.Account", "RoleId")
+                        .WithMany("Account")
+                        .HasForeignKey("RoleId")
                         .IsRequired()
                         .HasConstraintName("FK__Account__RoleId__3F466844");
 
@@ -524,8 +523,7 @@ namespace FAP_BE.Migrations
 
             modelBuilder.Entity("FAP_BE.Models.Role", b =>
                 {
-                    b.Navigation("Account")
-                        .IsRequired();
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("FAP_BE.Models.Room", b =>

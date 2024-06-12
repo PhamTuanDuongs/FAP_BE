@@ -33,7 +33,7 @@ namespace FAP_BE.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server=DESKTOP-D8JRM1T\\DUONG;database=FAP_PRN231;uid=sa;pwd=123;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("server=DESKTOP-2RUM469;database=FAP_PRN231;uid=sa;pwd=123;TrustServerCertificate=True;");
             }
         }
 
@@ -63,8 +63,8 @@ namespace FAP_BE.Models
                     .HasConstraintName("FK__Account__MetaDat__403A8C7D");
 
                 entity.HasOne(d => d.Role)
-                    .WithOne(p => p.Account)
-                    .HasForeignKey<Account>(d => d.RoleId)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Account__RoleId__3F466844");
             });
