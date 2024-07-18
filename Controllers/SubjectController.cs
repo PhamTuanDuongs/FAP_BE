@@ -86,8 +86,8 @@ namespace FAP_BE.Controllers
                 if(_subjectRepository.GetSubjectById(id) == null) return NotFound();
                 if(_subjectRepository.GetSubjectByCode(subject.Code) != null) return Conflict("Dupplicate code subject");
                 bool check = _subjectRepository.UpdateSubject(id,subject);
-                if (!check) return Conflict();
-                return Ok("Update new subject successfully");
+                if (!check) return Conflict("Update subject fail");
+                return Ok("Update subject successfully");
             }catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -101,7 +101,7 @@ namespace FAP_BE.Controllers
             {
                 if (_subjectRepository.GetSubjectById(id) == null) return NotFound();
                 bool check = _subjectRepository.DeleteSubject(id);
-                if(!check) return Conflict();
+                if(!check) return Conflict("Delete subject fail");
                 return Ok("Delete subject successfully");
             }
             catch (Exception ex)

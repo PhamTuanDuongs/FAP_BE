@@ -22,14 +22,14 @@ namespace FAP_BE.Controllers
             _mapper = mapper;
         }
 
-        [Authorize(Roles = "Teacher,Admin")]
+        //[Authorize(Roles = "Teacher,Admin")]
         [HttpGet("GetAllStudents")]
         public IActionResult GetAllStudents()
         {
             try
             {
                 List<Student> list = _studentRepository.GetAllStudents();
-                if (list.Count == 0 || list == null) return NotFound();
+                if (list.Count == 0 || list == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<List<StudentInfoDTO>>(list);
                 return Ok(resultMapping);
             }
@@ -46,7 +46,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var student = _studentRepository.GetStudentByRoleNumber(rolenumber);
-                if (student == null) return NotFound();
+                if (student == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<Student, StudentInfoDTO>(student);
                 return Ok(resultMapping);
             }
@@ -62,7 +62,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var student = _studentRepository.GetStudentById(id);
-                if (student == null) return NotFound();
+                if (student == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<Student, StudentInfoDTO>(student);
                 return Ok(resultMapping);
             }
@@ -87,12 +87,12 @@ namespace FAP_BE.Controllers
             }
         }
 
-        [HttpPut("UpdateStudent")]
+        [HttpPut("UpdateStudent/{id}")]
         public IActionResult UpdateStudent(int id, CreateNewStudentDTO subject)
         {
             try
             {
-                if (_studentRepository.GetStudentById(id) == null) return NotFound();
+                if (_studentRepository.GetStudentById(id) == null) return NotFound("Not found");
                 bool check = _studentRepository.UpdateStudent(id, subject);
                 if (!check) return Conflict("Update student fail");
                 return Ok("Update student successfully");
@@ -108,7 +108,7 @@ namespace FAP_BE.Controllers
         {
             try
             {
-                if(_studentRepository.GetStudentById(id) == null) return NotFound();
+                if(_studentRepository.GetStudentById(id) == null) return NotFound("Not found");
                 bool check = _studentRepository.DeleteStudent(id);
                 if(!check) return Conflict("Delete student fail");
                 return Ok("Delete student successfully");

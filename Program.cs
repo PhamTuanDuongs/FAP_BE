@@ -43,6 +43,8 @@ namespace FAP_BE
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(StudentProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(InstructorProfile).Assembly);
+
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
