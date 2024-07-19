@@ -3,9 +3,10 @@ using FAP_BE.DTOs;
 using FAP_BE.Models;
 using FAP_BE.Repository;
 using FAP_BE.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using System.Net;
 
 namespace FAP_BE.Controllers
 {
@@ -21,7 +22,7 @@ namespace FAP_BE.Controllers
             _instructorRepository = instructorRepository;
             _mapper = mapper;
         }
-
+        //[Authorize(Roles = "Teacher,Admin")]
         [HttpGet("GetAllInstructors")]
         public IActionResult GetAllInstructors()
         {

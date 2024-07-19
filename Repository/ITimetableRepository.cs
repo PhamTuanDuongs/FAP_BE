@@ -1,4 +1,5 @@
-﻿using FAP_BE.Models;
+﻿using FAP_BE.DTOs;
+using FAP_BE.Models;
 
 namespace FAP_BE.Repository
 {
@@ -8,5 +9,7 @@ namespace FAP_BE.Repository
         public List<Attendance> GetSchedulesByStudentId(int id, DateTime from, DateTime to);
 
         public List<Schedule> GetSchedulesByInstructorId(int id, DateTime from, DateTime to);
+        public List<Attendance> GetStatisticsAttendance(int id, int courseId);
+        public List<Schedule> GetSchedules();
     }
 }

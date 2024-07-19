@@ -7,6 +7,8 @@ namespace FAP_BE.DTOs
 
         public int Id { get; set; }
         public string InstructorCode { get; set; }
+        public int InstructorId { get; set; }
+
         public int CourseId { get; set; }
         public int Slot { get; set; }
         public string Date { get; set; }
