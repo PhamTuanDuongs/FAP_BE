@@ -16,8 +16,7 @@ namespace FAP_BE
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<FAP_PRN231Context>(option =>
-            option.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
-
+            option.UseSqlServer(builder.Configuration.GetConnectionString("DB"))).AddTransient<FAP_PRN231Context>(); ;
             var configuration = builder.Configuration;
             builder.Services.AddAuthentication(x =>
             {
@@ -43,6 +42,8 @@ namespace FAP_BE
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(StudentProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(RoomProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(CourseProfile).Assembly);
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -54,6 +55,7 @@ namespace FAP_BE
             builder.Services.AddSingleton<IAccountRepository, AccountRepository>();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
             builder.Services.AddSingleton<ITimetableRepository, TimtableRepository>();
+            builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
