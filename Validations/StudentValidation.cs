@@ -26,17 +26,28 @@ namespace FAP_BE.Validations
         {
             try
             {
-                var instructors = _context.Students.ToList();
+                var students = _context.Students.ToList();
+                var instructors = _context.Instructors.ToList();
                 var metadatas = _context.MetaData.ToList();
                 var accounts = _context.Accounts.ToList();
 
                 string result = "";
-                foreach (var instructor in instructors)
+                foreach (var student in students)
                 {
-                    bool dupplicateCode = instructor.RoleNumber.ToUpper().Equals(createNewInstructorDTO.RoleNumber.ToUpper());
+                    bool dupplicateCode = student.RoleNumber.ToUpper().Equals(createNewInstructorDTO.RoleNumber.ToUpper());
                     if (dupplicateCode)
                     {
                         result += "Dupplicate student rolenumber\n";
+                        break;
+                    }
+                }
+
+                foreach( var instructor in instructors)
+                {
+                    bool dupplicateCode = instructor.InstructorCode.ToUpper().Equals(createNewInstructorDTO.RoleNumber.ToUpper());
+                    if (dupplicateCode)
+                    {
+                        result += "Student roldenumber overlap instructor instructor code \n";
                         break;
                     }
                 }
