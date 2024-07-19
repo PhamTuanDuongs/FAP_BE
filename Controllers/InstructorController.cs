@@ -29,8 +29,8 @@ namespace FAP_BE.Controllers
             try
             {
                 List<Instructor> list = _instructorRepository.GetAllInstructor();
-                if (list.Count == 0 || list == null) return NotFound();
-                var resultMapping = _mapper.Map<List<InstructorInfoDTO>>(list);
+                if (list.Count == 0 || list == null) return NotFound("Not found");
+                var resultMapping = _mapper.Map< List<Instructor>, List<InstructorInfoDTO>>(list);
                 return Ok(resultMapping);
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var instructor = _instructorRepository.GetInstructorById(id);
-                if (instructor == null) return NotFound();
+                if (instructor == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<Instructor, InstructorInfoDTO>(instructor);
                 return Ok(resultMapping);
             }
@@ -61,7 +61,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var instructor = _instructorRepository.GetInstructorByCode(code);
-                if (instructor == null) return NotFound();
+                if (instructor == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<Instructor, InstructorInfoDTO>(instructor);
                 return Ok(resultMapping);
             }
@@ -86,15 +86,14 @@ namespace FAP_BE.Controllers
             }
         }
 
-        [HttpPut("UpdateInstructor")]
+        [HttpPut("UpdateInstructor/{id}")]
         public IActionResult UpdateStudent(int id, CreateNewInstructorDTO subject)
         {
             try
             {
-                if (_instructorRepository.GetInstructorById(id) == null) return NotFound();
-                if (_instructorRepository.GetInstructorByCode(subject.InstructorCode) != null) return Conflict("Dupplicate instructor code instructor");
+                if (_instructorRepository.GetInstructorById(id) == null) return NotFound("Not found");
                 bool check = _instructorRepository.UpdateInstructor(id, subject);
-                if (!check) return Conflict();
+                if (!check) return Conflict("Update  fail");
                 return Ok("Update Instructor successfully");
             }
             catch (Exception ex)
@@ -108,7 +107,7 @@ namespace FAP_BE.Controllers
         {
             try
             {
-                if (_instructorRepository.GetInstructorById(id) == null) return NotFound();
+                if (_instructorRepository.GetInstructorById(id) == null) return NotFound("Not found");
                 bool check = _instructorRepository.DeleteInstuctor(id);
                 if (!check) return Conflict("Delete Instructor Fail");
                 return Ok("Delete Instructor Successfully");

@@ -4,8 +4,10 @@ using FAP_BE.Models;
 using FAP_BE.Repository;
 using FAP_BE.Service;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace FAP_BE.Controllers
 {
@@ -16,20 +18,20 @@ namespace FAP_BE.Controllers
         private readonly IStudentRepository _studentRepository;
         private IMapper _mapper;
 
-        public StudentController(IStudentRepository studentRepository, IMapper mapper)
+        public StudentController(IStudentRepository studentRepository, IMapper mapper, IHostEnvironment env)
         {
             _studentRepository = studentRepository;
             _mapper = mapper;
         }
 
-        [Authorize(Roles = "Teacher,Admin")]
+        //[Authorize(Roles = "Teacher,Admin")]
         [HttpGet("GetAllStudents")]
         public IActionResult GetAllStudents()
         {
             try
             {
                 List<Student> list = _studentRepository.GetAllStudents();
-                if (list.Count == 0 || list == null) return NotFound();
+                if (list.Count == 0 || list == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<List<StudentInfoDTO>>(list);
                 return Ok(resultMapping);
             }
@@ -46,7 +48,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var student = _studentRepository.GetStudentByRoleNumber(rolenumber);
-                if (student == null) return NotFound();
+                if (student == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<Student, StudentInfoDTO>(student);
                 return Ok(resultMapping);
             }
@@ -62,7 +64,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var student = _studentRepository.GetStudentById(id);
-                if (student == null) return NotFound();
+                if (student == null) return NotFound("Not found");
                 var resultMapping = _mapper.Map<Student, StudentInfoDTO>(student);
                 return Ok(resultMapping);
             }
@@ -73,12 +75,30 @@ namespace FAP_BE.Controllers
         }
 
         [HttpPost("AddNewStudent")]
-        public IActionResult AddNewStudent(CreateNewStudentDTO newStudentDTO)
+        public async Task<IActionResult> AddNewStudent([FromForm] CreateNewStudentDTO newStudentDTO, IFormFile file)
         {
             try
             {
                 string result = _studentRepository.AddNewStudent(newStudentDTO);
-                if (result.Equals("Add a new student successfully")) return Ok(result);
+
+                if (result.Equals("Add a new student successfully"))
+                {
+                    string folderPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Images");
+                    string fileName = $"{newStudentDTO.RoleNumber}{Path.GetExtension(file.FileName)}";
+                    string filePath = Path.Combine(folderPath, fileName);
+
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                    return Ok(result);
+                }
+
                 return Conflict(result);
             }
             catch (Exception ex)
@@ -87,14 +107,59 @@ namespace FAP_BE.Controllers
             }
         }
 
-        [HttpPut("UpdateStudent")]
-        public IActionResult UpdateStudent(int id, CreateNewStudentDTO subject)
+        [HttpGet("GetStudentImageByName/{name}")]
+        public IActionResult GetStudentImageByName(string name)
         {
             try
             {
-                if (_studentRepository.GetStudentById(id) == null) return NotFound();
+                string imagePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Images",name);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    var imageData = System.IO.File.ReadAllBytes(imagePath);
+                    return File(imageData, "image/jpeg");
+                }
+                else
+                {
+                    return NotFound("Image not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("UpdateStudent/{id}")]
+        public async Task<IActionResult> UpdateStudent(int id, [FromForm] CreateNewStudentDTO subject, IFormFile? file)
+        {
+            try
+            {
+                if (_studentRepository.GetStudentById(id) == null) return NotFound("Not found");
                 bool check = _studentRepository.UpdateStudent(id, subject);
                 if (!check) return Conflict("Update student fail");
+
+                if (file  != null)
+                {
+                    string folderPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Images");
+                    string fileName = $"{subject.RoleNumber}{Path.GetExtension(file.FileName)}";
+                    string filePath = Path.Combine(folderPath, fileName);
+
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                }
+
                 return Ok("Update student successfully");
             }
             catch (Exception ex)
@@ -108,9 +173,25 @@ namespace FAP_BE.Controllers
         {
             try
             {
-                if(_studentRepository.GetStudentById(id) == null) return NotFound();
+                var subject = _studentRepository.GetStudentById(id);
+                if(subject == null) return NotFound("Not found");
+
+                string folderPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Images");
+                string fileName = $"{subject.MetaData.Image}";
+                string filePath = Path.Combine(folderPath, fileName);
+
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
                 bool check = _studentRepository.DeleteStudent(id);
-                if(!check) return Conflict("Delete student fail");
+                if (!check) return Conflict("Delete student fail");
                 return Ok("Delete student successfully");
             }
             catch (Exception ex)

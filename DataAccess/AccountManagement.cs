@@ -34,9 +34,9 @@ namespace FAP_BE.DataAccess
         {
             try
             {
-                string username = loginDTO.Username;
+                string username = loginDTO.Email;
                 string password = loginDTO.Password;
-                var account = _context.Accounts.Include(r => r.Role).FirstOrDefault(s => s.Username.Equals(username) && s.Password.Equals(password));
+                var account = _context.Accounts.Include(r => r.Role).Include(md => md.MetaData).FirstOrDefault(s => s.MetaData.Email.Equals(username) && s.Password.Equals(password));
                 return account;
             }catch(Exception ex)
             {

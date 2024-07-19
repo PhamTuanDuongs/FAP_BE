@@ -33,7 +33,8 @@ namespace FAP_BE
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -42,6 +43,7 @@ namespace FAP_BE
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(StudentProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(InstructorProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(RoomProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(CourseProfile).Assembly);
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

@@ -27,6 +27,7 @@ namespace FAP_BE.Validations
             try
             {
                 var instructors = _context.Instructors.ToList();
+                var students = _context.Students.ToList();
                 var metadatas = _context.MetaData.ToList();
                 var accounts = _context.Accounts.ToList();
 
@@ -41,7 +42,17 @@ namespace FAP_BE.Validations
                     }
                 }
 
-                foreach(var metadata in metadatas)
+                foreach (var student in students)
+                {
+                    bool dupplicateCode = student.RoleNumber.ToUpper().Equals(createNewInstructorDTO.InstructorCode.ToUpper());
+                    if (dupplicateCode)
+                    {
+                        result += "Instructor code overlap student rolenumber \n";
+                        break;
+                    }
+                }
+
+                foreach (var metadata in metadatas)
                 {
                     bool dupplicateEmail = metadata.Email.ToUpper().Equals(createNewInstructorDTO.Email.ToUpper());
                     if (dupplicateEmail)

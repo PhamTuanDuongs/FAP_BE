@@ -27,7 +27,7 @@ namespace FAP_BE.Controllers
             try
             {
                 var account = _accountRepository.Login(loginDTO);
-                if (account == null) return Ok("Login fail");
+                if (account == null) return Unauthorized("Login fail");
                 var accountInfo = _mapper.Map<Account,AccountInfoDTO>(account);
                 string token = _accountRepository.GenerateToken(accountInfo);
                 return Ok(token);

@@ -33,6 +33,7 @@ namespace FAP_BE.DataAccess
             try
             {
                 var list = _context.Instructors.
+                    Include(c => c.Courses).
                     Include(md => md.MetaData).
                     ThenInclude(a => a.Account).
                     ThenInclude(r => r.Role).ToList();
@@ -132,8 +133,6 @@ namespace FAP_BE.DataAccess
 
                     var existingMetaData = _context.MetaData.FirstOrDefault(x => x.MetaDataId == existingInstructor.MetaDataId);
                     var existingAccount = _context.Accounts.FirstOrDefault(x => x.MetaDataId == existingInstructor.MetaDataId);
-
-                    existingInstructor.InstructorCode = existingInstructor.InstructorCode;
 
                     existingMetaData.Name = newInstructorDTO.Name;
                     existingMetaData.Dob = newInstructorDTO.Dob;
