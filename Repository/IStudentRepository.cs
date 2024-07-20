@@ -13,6 +13,6 @@ namespace FAP_BE.Repository
         public string AddNewStudent(CreateNewStudentDTO createNewStudentDTO);
         public bool UpdateStudent(int id, CreateNewStudentDTO student);
         public bool DeleteStudent(int id);
-
+        public bool ExportStudentToExcel(List<StudentInfoDTO> list, Stream stream);
     }
 }

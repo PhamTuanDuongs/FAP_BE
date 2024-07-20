@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using System.Reflection;
 
 namespace FAP_BE.Controllers
@@ -195,6 +196,29 @@ namespace FAP_BE.Controllers
                 return Ok("Delete student successfully");
             }
             catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ExportStudentToExcel")]
+        public IActionResult ExportStudentToExcel()
+        {
+            try
+            {
+                List<Student> students = _studentRepository.GetAllStudents();
+                List<StudentInfoDTO> studentDtos = _mapper.Map<List<StudentInfoDTO>>(students);
+
+                MemoryStream stream = new MemoryStream();
+                _studentRepository.ExportStudentToExcel(studentDtos, stream);
+                stream.Position = 0;
+
+                return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    FileDownloadName = "StudentsInfo.xlsx"
+                };
+            }
+            catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
