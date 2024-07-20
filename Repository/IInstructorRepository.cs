@@ -11,5 +11,6 @@ namespace FAP_BE.Repository
         public string AddNewInstructor(CreateNewInstructorDTO createNewStudentDTO);
         public bool UpdateInstructor(int id, CreateNewInstructorDTO createNewInstructorDTO);
         public bool DeleteInstuctor(int id);
+        public bool ExportInstructorToExcel(List<InstructorInfoDTO> list, Stream stream);
     }
 }

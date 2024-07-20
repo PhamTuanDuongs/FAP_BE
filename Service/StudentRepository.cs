@@ -27,6 +27,8 @@ namespace FAP_BE.Service
 
         public bool DeleteStudent(int id) => StudentManagement.Instance.DeleteStudent(id);
 
+        public bool ExportStudentToExcel(List<StudentInfoDTO> list, Stream stream) => StudentManagement.Instance.ExportStudentToExcel(list, stream);
+
         public List<Student> GetAllStudents() => StudentManagement.Instance.GetAllStudents();
 
         public Student GetStudentById(int id) => StudentManagement.Instance.GetStudentById(id);

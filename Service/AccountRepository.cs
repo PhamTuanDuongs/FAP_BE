@@ -9,7 +9,7 @@ namespace FAP_BE.Service
     {
         public string GenerateToken(AccountInfoDTO accountInfo) => AccountManagement.Instance.GenerateJwtToken(accountInfo);
 
-        public Account Login(LoginDTO loginDTO) => AccountManagement.Instance.Login(loginDTO);
+        public AccountInfoDTO Login(LoginDTO loginDTO) => AccountManagement.Instance.Login(loginDTO);
 
     }
 }

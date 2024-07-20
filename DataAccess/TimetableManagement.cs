@@ -2,6 +2,7 @@
 using FAP_BE.DTOs;
 using FAP_BE.Models;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace FAP_BE.DataAccess
 {
@@ -33,7 +34,7 @@ namespace FAP_BE.DataAccess
                                Include(f => f.Schedule).ThenInclude(i => i.Instructor).
                                Include(c => c.Schedule).ThenInclude(co => co.RoomNavigation).
                                Include(d => d.Schedule).ThenInclude(r => r.Course).ThenInclude(s => s.Subject).
-                               Where(sc => sc.Schedule.Date >= from && sc.Schedule.Date <= to)
+                               Where(sc => sc.Schedule.Date >= from && sc.Schedule.Date <= to && sc.Student.Id == studentId)
                                .ToList();
                 listAttendance = listAttendance.DistinctBy(s => s.ScheduleId).ToList();
                 return listAttendance;
@@ -49,7 +50,7 @@ namespace FAP_BE.DataAccess
                                    .Include(i => i.Instructor)
                                    .Include(co => co.RoomNavigation).
                                    Include(r => r.Course).ThenInclude(s => s.Subject).
-                                   Where(sc => sc.Date >= from && sc.Date <= to)
+                                   Where(sc => sc.Date >= from && sc.Date <= to && sc.Instructor.Id == instructorId)
                                    .ToList();
                 listSchedules = listSchedules.DistinctBy(s => s.Id).ToList();
                 return listSchedules;
@@ -96,6 +97,44 @@ namespace FAP_BE.DataAccess
                 return listSchedules;
             }
 
+        }
+
+        public bool ExportStatisticToExcel(List<Statistics_Attendance> list, Stream stream)
+        {
+            try
+            {
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                using (var package = new ExcelPackage())
+                {
+                    var worksheet = package.Workbook.Worksheets.Add("StudentData");
+
+                    worksheet.Cells[1, 1].Value = "CourseName";
+                    worksheet.Cells[1, 2].Value = "Rolenumber";
+                    worksheet.Cells[1, 3].Value = "Name";
+                    worksheet.Cells[1, 4].Value = "AbsentPercentage%";
+                    worksheet.Cells[1, 5].Value = "TotalAbsents";
+
+                    int row = 2;
+                    foreach (var student in list)
+                    {
+                        worksheet.Cells[row, 1].Value = student.CourseName;
+                        worksheet.Cells[row, 2].Value = student.RollNumber;
+                        worksheet.Cells[row, 3].Value = student.StudentName;
+                        worksheet.Cells[row, 4].Value = student.Percentage;
+                        worksheet.Cells[row, 5].Value = student.Summary;
+                        row++;
+                    }
+
+                    package.SaveAs(stream);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+
+            }
         }
     }
 }

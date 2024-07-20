@@ -27,6 +27,11 @@ namespace FAP_BE.Service
 
         public bool DeleteInstuctor(int id) => InstructorManagement.Instance.DeleteInstructor(id);
 
+        public bool ExportInstructorToExcel(List<InstructorInfoDTO> list, Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<Instructor> GetAllInstructor() => InstructorManagement.Instance.GetAllInstructors();
 
         public Instructor GetInstructorByCode(string code) => InstructorManagement.Instance.GetInstructorByCode(code);

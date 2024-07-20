@@ -3,6 +3,7 @@ using FAP_BE.DataAccess;
 using FAP_BE.DTOs;
 using FAP_BE.Models;
 using FAP_BE.Repository;
+using FAP_BE.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
@@ -68,6 +69,48 @@ namespace FAP_BE.Controllers
                                                 .Select(grp => grp.First())
                                                 .ToList();
             return Ok(groupedStatistics);
+        }
+
+        [HttpGet("ExportStatisticToExcel")]
+        public IActionResult ExportStatisticToExcel(int courseId, int id)
+        {
+            try
+            {
+                var listAttendance = _timetableRepository.GetStatisticsAttendance(id, courseId);
+                var resultMapping = _mapper.Map<List<AttendanceDTO>>(listAttendance);
+                var listStatisticAttendance = resultMapping.Select(rs => new Statistics_Attendance
+                {
+                    CourseName = rs.ScheduleDTONav.Course.Code,
+                    RollNumber = rs.Student.RoleNumber,
+                    StudentName = rs.Student.Name,
+                    Attendances = listAttendance.Where(s => s.StudentId == rs.StudentId).Select(c => new AttendanceDTO
+                    {
+                        StudentId = c.StudentId,
+                        ScheduleId = c.ScheduleId,
+                        DateAttended = c.DateAttended,
+                        Status = c.Status,
+                        Comment = c.Comment,
+                    }).ToList(),
+                    Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance.Where(su => su.StudentId == rs.StudentId).Select(ps => ps.Schedule.Course.Subject.ManageSlot).FirstOrDefault(), resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 1)),
+                    Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 1),
+                }).ToList();
+                var groupedStatistics = listStatisticAttendance.GroupBy(gp => gp.RollNumber)
+                                                    .Select(grp => grp.First())
+                                                    .ToList();
+
+                MemoryStream stream = new MemoryStream();
+                _timetableRepository.ExportStatisticToExcel(groupedStatistics, stream);
+                stream.Position = 0;
+
+                return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    FileDownloadName = "StatisticInfo.xlsx"
+                };
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("GetSchedules")]
