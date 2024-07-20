@@ -3,6 +3,10 @@ using FAP_BE.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Microsoft.Win32;
+using OfficeOpenXml;
+
 
 namespace FAP_BE.DataAccess
 {
@@ -189,6 +193,19 @@ namespace FAP_BE.DataAccess
                 }
             }
                 
+        }
+
+        public void ExportStudentToExcel()
+        {
+            try
+            {
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                
+
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }
