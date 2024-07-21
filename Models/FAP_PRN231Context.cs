@@ -33,9 +33,9 @@ namespace FAP_BE.Models
             if (!optionsBuilder.IsConfigured)
             {
                 IConfiguration config = new ConfigurationBuilder()
-                                     .SetBasePath(Directory.GetCurrentDirectory())
-                                     .AddJsonFile("appsettings.json", true, true)
-                                     .Build();
+                  .SetBasePath(Directory.GetCurrentDirectory())
+                  .AddJsonFile("appsettings.json", true, true)
+                  .Build();
                 var strConn = config["ConnectionStrings:DB"];
                 optionsBuilder.UseSqlServer(strConn);
             }

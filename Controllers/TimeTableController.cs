@@ -6,6 +6,7 @@ using FAP_BE.Repository;
 using FAP_BE.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Web;
 
 namespace FAP_BE.Controllers
@@ -62,8 +63,12 @@ namespace FAP_BE.Controllers
                     Status = c.Status,
                     Comment = c.Comment,
                 }).ToList(),
-                Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance.Where(su => su.StudentId == rs.StudentId).Select(ps => ps.Schedule.Course.Subject.ManageSlot).FirstOrDefault(), resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 1)),
-                Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 1),
+                Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance
+                .Where(su => su.StudentId == rs.StudentId)
+                .Count(), resultMapping.Where(su => su.StudentId == rs.StudentId)
+                .Count(cu => cu.Status == 2)),
+
+                Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 2),
             }).ToList();
             var groupedStatistics = listStatisticAttendance.GroupBy(gp => gp.RollNumber)
                                                 .Select(grp => grp.First())
@@ -91,8 +96,10 @@ namespace FAP_BE.Controllers
                         Status = c.Status,
                         Comment = c.Comment,
                     }).ToList(),
-                    Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance.Where(su => su.StudentId == rs.StudentId).Select(ps => ps.Schedule.Course.Subject.ManageSlot).FirstOrDefault(), resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 1)),
-                    Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 1),
+                    Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance
+                    .Where(su => su.StudentId == rs.StudentId)
+                    .Count(), resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 2)),
+                    Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 2),
                 }).ToList();
                 var groupedStatistics = listStatisticAttendance.GroupBy(gp => gp.RollNumber)
                                                     .Select(grp => grp.First())
@@ -127,7 +134,7 @@ namespace FAP_BE.Controllers
             var listSchedules = _mapper.Map<List<ScheduleDTO>>(_timetableRepository.GetSchedules()).Where(s => s.CourseId == courseId && s.InstructorId == id).Select(c => new
             {
                 date = c.Date,
-            }).ToList();
+            }).OrderBy(d => DateTime.ParseExact(d.date, "dd/MM", CultureInfo.InvariantCulture)).ToList();
             return Ok(listSchedules);
         }
     }
