@@ -1,5 +1,7 @@
 ﻿using FAP_BE.DTOs;
 using FAP_BE.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Globalization;
 
@@ -30,7 +32,7 @@ namespace FAP_BE.DataAccess
 
         public bool AddNewCourse(CreateNewCourseDTO courseDTO)
         {
-           using(IDbContextTransaction transaction = _context.Database.BeginTransaction())
+            using (IDbContextTransaction transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
@@ -173,6 +175,29 @@ namespace FAP_BE.DataAccess
         {
             _context.StudentCourse.AddRange(studentCourse);
             _context.SaveChanges();
+        }
+
+        public List<Course> GetCourses()
+        {
+            try
+            {
+                var listCourse = _context.Courses.Include(s => s.Subject).Include(u => u.InstructorNavigation).Include(r => r.RoomNavigation).ToList();
+                return listCourse;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public List<Course> GetCourseByInstructorId(int instructorId) { 
+            var course = _context.Courses.Include(s => s.Subject)
+                .Include(u => u.InstructorNavigation)
+                .Include(r => r.RoomNavigation)
+                .Where(c => c.InstructorId == instructorId).ToList();
+            if (course == null) throw new Exception("No course");    
+            return course;
         }
     }
 }

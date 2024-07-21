@@ -32,8 +32,12 @@ namespace FAP_BE.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var ConnectionString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetConnectionString("DefaultConnection");
-                optionsBuilder.UseSqlServer(ConnectionString);
+                IConfiguration config = new ConfigurationBuilder()
+                  .SetBasePath(Directory.GetCurrentDirectory())
+                  .AddJsonFile("appsettings.json", true, true)
+                  .Build();
+                var strConn = config["ConnectionStrings:DB"];
+                optionsBuilder.UseSqlServer(strConn);
             }
         }
 
@@ -63,8 +67,8 @@ namespace FAP_BE.Models
                     .HasConstraintName("FK__Account__MetaDat__403A8C7D");
 
                 entity.HasOne(d => d.Role)
-                    .WithOne(p => p.Account)
-                    .HasForeignKey<Account>(d => d.RoleId)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Account__RoleId__3F466844");
             });

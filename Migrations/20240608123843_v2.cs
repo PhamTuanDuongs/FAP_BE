@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FAP_BE.Migrations
 {
-    public partial class v1 : Migration
+    public partial class v2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -249,8 +249,7 @@ namespace FAP_BE.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Account_RoleId",
                 table: "Account",
-                column: "RoleId",
-                unique: true);
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "UQ__Account__429BA08C8A1CBF00",
