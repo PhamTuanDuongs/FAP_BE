@@ -17,7 +17,7 @@ namespace FAP_BE
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<FAP_PRN231Context>(option =>
-            option.UseSqlServer(builder.Configuration.GetConnectionString("DB"))).AddTransient<FAP_PRN231Context>(); ;
+            option.UseSqlServer(builder.Configuration.GetConnectionString("DB"))); ;
             var configuration = builder.Configuration;
             builder.Services.AddAuthentication(x =>
             {
@@ -58,11 +58,9 @@ namespace FAP_BE
             builder.Services.AddSingleton<IAccountRepository, AccountRepository>();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
             builder.Services.AddSingleton<ITimetableRepository, TimtableRepository>();
-<<<<<<< HEAD
 
             builder.Services.AddSingleton<IAttendancesRepository, AttendancesReponsitory>();
-            //  builder.Services.AddScoped<AttendancesManagement>(); 
-
+            builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigins",
@@ -74,11 +72,6 @@ namespace FAP_BE
                     });
             });
 
-
-            //builder.Services.AddScoped< builder.Services., AttendancesManagement>();
-=======
-            builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
->>>>>>> 093b8723a9df7229af71b4cb081a3661c0792f13
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
