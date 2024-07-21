@@ -29,5 +29,23 @@ namespace FAP_BE.Service
             }
 
         }
+
+
+        public List<Course> GetCourseByInstructorId(int instructorId) => CourseManagement.Instance.GetCourseByInstructorId(instructorId);
+
+        bool ICourseRepository.DeleteCourse(int courseId)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<Course> ICourseRepository.GetCourses() => CourseManagement.Instance.GetCourses();
+
+        void ICourseRepository.UpdateCourse(CourseDTO course)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        
     }
 }

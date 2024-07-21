@@ -18,7 +18,7 @@ namespace FAP_BE.Mappings
                     Slot = s.Schedule.Slot,
                     Date = s.Schedule.Date.ToString("dd/MM"),
                     Room = s.Schedule.Room,
-                    Course = new CourseDTO  
+                    Course = new CourseDTO
                     {
                         Id = s.Schedule.Course.Id,
                         Code = s.Schedule.Course.Code,
@@ -34,11 +34,17 @@ namespace FAP_BE.Mappings
                         }
                     }
                 }
-                ));
+                )).ForMember(src => src.Student, opt => opt.MapFrom(s => new StudentDTO
+                {
+                    Id = s.StudentId,
+                    RoleNumber = s.Student.RoleNumber,
+                    Name = s.Student.MetaData.Name,
+                }));
 
 
             CreateMap<Schedule, ScheduleDTO>().
                 ForMember(src => src.Date, opt => opt.MapFrom(s => s.Date.ToString("dd/MM"))).
+                ForMember(src => src.Id, opt => opt.MapFrom(s => s.Instructor.Id)).
                 ForMember(src => src.InstructorCode, opt => opt.MapFrom(s => s.Instructor.InstructorCode)).
                 ForMember(src => src.Course, opt => opt.MapFrom(s => new CourseDTO
                 {
@@ -54,6 +60,11 @@ namespace FAP_BE.Mappings
                         ManageSlot = s.Course.Subject.ManageSlot,
                     }
                 }));
+
+            CreateMap<Account, AccountInfoDTO>().
+                ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name));
+
         }
+
     }
 }

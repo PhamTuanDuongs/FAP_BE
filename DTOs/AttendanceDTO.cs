@@ -9,6 +9,9 @@
         public int? Status { get; set; }
         public string? Comment { get; set; }
 
+        public StudentDTO Student { get; set; }
+
+
         public  ScheduleDTO ScheduleDTONav { get; set; }
     }
 }
