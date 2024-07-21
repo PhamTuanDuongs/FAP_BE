@@ -15,7 +15,6 @@ namespace FAP_BE.DTOs
         public string Room { get; set; }
 
         public bool Status { get; set; }
-
         public CourseDTO Course { get; set; }
     }
 }

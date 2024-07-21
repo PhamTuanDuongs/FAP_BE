@@ -48,62 +48,105 @@ namespace FAP_BE.Controllers
         [HttpGet("statistics")]
         public async Task<IActionResult> GetScheduleForInstructor(int courseId, int id)
         {
-            var listAttendance = _timetableRepository.GetStatisticsAttendance(id, courseId);
+            var listAttendance = await _timetableRepository.GetStatisticsAttendance(id, courseId);
             var resultMapping = _mapper.Map<List<AttendanceDTO>>(listAttendance);
-            var listStatisticAttendance = resultMapping.Select(rs => new Statistics_Attendance
-            {
-                CourseName = rs.ScheduleDTONav.Course.Code,
-                RollNumber = rs.Student.RoleNumber,
-                StudentName = rs.Student.Name,
-                Attendances = listAttendance.Where(s => s.StudentId == rs.StudentId).Select(c => new AttendanceDTO
-                {
-                    StudentId = c.StudentId,
-                    ScheduleId = c.ScheduleId,
-                    DateAttended = c.DateAttended,
-                    Status = c.Status,
-                    Comment = c.Comment,
-                }).ToList(),
-                Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance
-                .Where(su => su.StudentId == rs.StudentId)
-                .Count(), resultMapping.Where(su => su.StudentId == rs.StudentId)
-                .Count(cu => cu.Status == 2)),
 
-                Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 2),
-            }).ToList();
-            var groupedStatistics = listStatisticAttendance.GroupBy(gp => gp.RollNumber)
-                                                .Select(grp => grp.First())
-                                                .ToList();
-            return Ok(groupedStatistics);
-        }
-
-        [HttpGet("ExportStatisticToExcel")]
-        public IActionResult ExportStatisticToExcel(int courseId, int id)
-        {
-            try
+            var attendanceDTOs = resultMapping.Select(rs => new
             {
-                var listAttendance = _timetableRepository.GetStatisticsAttendance(id, courseId);
-                var resultMapping = _mapper.Map<List<AttendanceDTO>>(listAttendance);
-                var listStatisticAttendance = resultMapping.Select(rs => new Statistics_Attendance
-                {
-                    CourseName = rs.ScheduleDTONav.Course.Code,
-                    RollNumber = rs.Student.RoleNumber,
-                    StudentName = rs.Student.Name,
-                    Attendances = listAttendance.Where(s => s.StudentId == rs.StudentId).Select(c => new AttendanceDTO
+                rs,
+                Attendances = listAttendance
+                    .Where(s => s.StudentId == rs.StudentId)
+                    .Select(c => new AttendanceDTO
                     {
                         StudentId = c.StudentId,
                         ScheduleId = c.ScheduleId,
                         DateAttended = c.DateAttended,
                         Status = c.Status,
                         Comment = c.Comment,
-                    }).ToList(),
-                    Percentage = TimetableManagement.Instance.getNumberIsAllowedAbsent((int)listAttendance
-                    .Where(su => su.StudentId == rs.StudentId)
-                    .Count(), resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 2)),
-                    Summary = resultMapping.Where(su => su.StudentId == rs.StudentId).Count(cu => cu.Status == 2),
+                    })
+                    .ToList()
+            }).ToList();
+
+            var percentageTasks = attendanceDTOs.Select(async dto => new
+            {
+                dto.rs,
+                dto.Attendances,
+                Percentage = await TimetableManagement.Instance.getNumberIsAllowedAbsent(
+                    listAttendance.Count(su => su.StudentId == dto.rs.StudentId),
+                    resultMapping.Count(su => su.StudentId == dto.rs.StudentId && su.Status == 2)
+                ),
+                Summary = resultMapping.Count(su => su.StudentId == dto.rs.StudentId && su.Status == 2)
+            }).ToList();
+
+            var percentageResults = await Task.WhenAll(percentageTasks);
+
+            var listStatisticAttendance = percentageResults.Select(result => new Statistics_Attendance
+            {
+                CourseName = result.rs.ScheduleDTONav.Course.Code,
+                RollNumber = result.rs.Student.RoleNumber,
+                StudentName = result.rs.Student.Name,
+                Attendances = result.Attendances,
+                Percentage = result.Percentage,
+                Summary = result.Summary
+            }).ToList();
+
+            var groupedStatistics = listStatisticAttendance.GroupBy(gp => gp.RollNumber)
+                                                .Select(grp => grp.First())
+                                                .ToList();
+            return Ok(groupedStatistics);
+        }
+
+
+        [HttpGet("ExportStatisticToExcel")]
+        public async Task<IActionResult> ExportStatisticToExcel(int courseId, int id)
+        {
+            try
+            {
+                var listAttendance = await _timetableRepository.GetStatisticsAttendance(id, courseId);
+                var resultMapping = _mapper.Map<List<AttendanceDTO>>(listAttendance);
+
+                var attendanceDTOs = resultMapping.Select(rs => new
+                {
+                    rs,
+                    Attendances = listAttendance
+                        .Where(s => s.StudentId == rs.StudentId)
+                        .Select(c => new AttendanceDTO
+                        {
+                            StudentId = c.StudentId,
+                            ScheduleId = c.ScheduleId,
+                            DateAttended = c.DateAttended,
+                            Status = c.Status,
+                            Comment = c.Comment,
+                        })
+                        .ToList()
                 }).ToList();
+
+                var percentageTasks = attendanceDTOs.Select(async dto => new
+                {
+                    dto.rs,
+                    dto.Attendances,
+                    Percentage = await TimetableManagement.Instance.getNumberIsAllowedAbsent(
+                        listAttendance.Count(su => su.StudentId == dto.rs.StudentId),
+                        resultMapping.Count(su => su.StudentId == dto.rs.StudentId && su.Status == 2)
+                    ),
+                    Summary = resultMapping.Count(su => su.StudentId == dto.rs.StudentId && su.Status == 2)
+                }).ToList();
+
+                var percentageResults = await Task.WhenAll(percentageTasks);
+
+                var listStatisticAttendance = percentageResults.Select(result => new Statistics_Attendance
+                {
+                    CourseName = result.rs.ScheduleDTONav.Course.Code,
+                    RollNumber = result.rs.Student.RoleNumber,
+                    StudentName = result.rs.Student.Name,
+                    Attendances = result.Attendances,
+                    Percentage = result.Percentage,
+                    Summary = result.Summary
+                }).ToList();
+
                 var groupedStatistics = listStatisticAttendance.GroupBy(gp => gp.RollNumber)
-                                                    .Select(grp => grp.First())
-                                                    .ToList();
+                                                .Select(grp => grp.First())
+                                                .ToList();
 
                 MemoryStream stream = new MemoryStream();
                 _timetableRepository.ExportStatisticToExcel(groupedStatistics, stream);
@@ -119,6 +162,7 @@ namespace FAP_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpGet("GetSchedules")]
         public IActionResult GetAllSchedule()

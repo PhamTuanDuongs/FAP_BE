@@ -15,6 +15,6 @@ namespace FAP_BE.Service
 
         List<Attendance> ITimetableRepository.GetSchedulesByStudentId(int id, DateTime from, DateTime to) => TimetableManagement.Instance.GetSchedulesByStudentId(id, from, to);
 
-        List<Attendance> ITimetableRepository.GetStatisticsAttendance(int id, int courseId) => TimetableManagement.Instance.GetStatisticsAttendance(id, courseId);
+        Task<List<Attendance>> ITimetableRepository.GetStatisticsAttendance(int id, int courseId) => TimetableManagement.Instance.GetStatisticsAttendance(id, courseId);
     }
 }

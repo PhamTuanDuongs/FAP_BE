@@ -30,7 +30,7 @@ namespace FAP_BE.DataAccess
         {
             using (var context = new FAP_PRN231Context())
             {
-                List<Attendance> listAttendance = _context.Attendances.
+                List<Attendance> listAttendance = context.Attendances.
                                Include(f => f.Schedule).ThenInclude(i => i.Instructor).
                                Include(c => c.Schedule).ThenInclude(co => co.RoomNavigation).
                                Include(d => d.Schedule).ThenInclude(r => r.Course).ThenInclude(s => s.Subject).
@@ -46,7 +46,7 @@ namespace FAP_BE.DataAccess
         {
             using (var context = new FAP_PRN231Context())
             {
-                List<Schedule> listSchedules = _context.Schedules
+                List<Schedule> listSchedules = context.Schedules
                                    .Include(i => i.Instructor)
                                    .Include(co => co.RoomNavigation).
                                    Include(r => r.Course).ThenInclude(s => s.Subject).
@@ -58,29 +58,27 @@ namespace FAP_BE.DataAccess
 
         }
 
-        public List<Attendance> GetStatisticsAttendance(int id, int courseid)
+        public async Task <List<Attendance>> GetStatisticsAttendance(int id, int courseid)
         {
             using (var context = new FAP_PRN231Context())
             {
-                List<Attendance> listAttendance = _context.Attendances.
+                return await context.Attendances.
                                 Include(st => st.Student).ThenInclude(stm => stm.MetaData).
                                Include(f => f.Schedule).ThenInclude(i => i.Instructor).
                                Include(c => c.Schedule).ThenInclude(co => co.RoomNavigation).
                                Include(d => d.Schedule).ThenInclude(r => r.Course).ThenInclude(s => s.Subject).
                                Where(sc => sc.Schedule.InstructorId == id && sc.Schedule.CourseId == courseid)
-                               .ToList();
-                //listAttendance = listAttendance.DistinctBy(s => s.ScheduleId).ToList();
-                return listAttendance;
+                               .ToListAsync(); ;
             }
         }
 
 
-        public int getNumberIsAllowedAbsent(int totalSlot, int numberAbsent)
+        public Task <int> getNumberIsAllowedAbsent(int totalSlot, int numberAbsent)
         {
                 int numberofsessionswithoutabsence = totalSlot - numberAbsent;
                 double percentslotafterDivideSlotIsAllowedAbsent = (double)numberofsessionswithoutabsence / (double)totalSlot * 100;
                 int percentAbsent = (int)(100 - percentslotafterDivideSlotIsAllowedAbsent);
-            return percentAbsent;
+            return Task.FromResult(percentAbsent);
         }
 
 
@@ -88,7 +86,7 @@ namespace FAP_BE.DataAccess
         {
             using (var context = new FAP_PRN231Context())
             {
-                List<Schedule> listSchedules = _context.Schedules
+                List<Schedule> listSchedules = context.Schedules
                                    .Include(i => i.Instructor)
                                    .Include(co => co.RoomNavigation).
                                    Include(r => r.Course).ThenInclude(s => s.Subject)

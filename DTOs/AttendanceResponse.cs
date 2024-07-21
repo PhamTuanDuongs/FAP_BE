@@ -1,19 +1,14 @@
 ﻿namespace FAP_BE.DTOs
 {
-    
-    public class AttendanceDTO
+   
+    public class AttendanceResponse
     {
-
         public int StudentId { get; set; }
-       
+        public string StudentName { get; set; }
         public int ScheduleId { get; set; }
         public DateTime? DateAttended { get; set; }
         public int? Status { get; set; }
         public string? Comment { get; set; }
-
-        public StudentDTO Student { get; set; }
-
-
-        public  ScheduleDTO ScheduleDTONav { get; set; }
+        public string RoleNumber { get; set; }
     }
 }

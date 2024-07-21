@@ -1,3 +1,4 @@
+﻿using FAP_BE.DataAccess;
 using FAP_BE.Mappings;
 using FAP_BE.Models;
 using FAP_BE.Repository;
@@ -16,7 +17,7 @@ namespace FAP_BE
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<FAP_PRN231Context>(option =>
-            option.UseSqlServer(builder.Configuration.GetConnectionString("DB"))).AddTransient<FAP_PRN231Context>(); ;
+            option.UseSqlServer(builder.Configuration.GetConnectionString("DB"))); ;
             var configuration = builder.Configuration;
             builder.Services.AddAuthentication(x =>
             {
@@ -57,7 +58,20 @@ namespace FAP_BE
             builder.Services.AddSingleton<IAccountRepository, AccountRepository>();
             builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
             builder.Services.AddSingleton<ITimetableRepository, TimtableRepository>();
+
+            builder.Services.AddSingleton<IAttendancesRepository, AttendancesReponsitory>();
             builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:3000") // URL của frontend
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
