@@ -25,7 +25,7 @@ namespace FAP_BE.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize(Roles = "Teacher,Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAllStudents")]
         public IActionResult GetAllStudents()
         {
@@ -213,9 +213,9 @@ namespace FAP_BE.Controllers
                 _studentRepository.ExportStudentToExcel(studentDtos, stream);
                 stream.Position = 0;
 
-                return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                return new FileStreamResult(stream, "text/csv")
                 {
-                    FileDownloadName = "StudentsInfo.xlsx"
+                    FileDownloadName = "StudentsInfo.csv"
                 };
             }
             catch(Exception ex)

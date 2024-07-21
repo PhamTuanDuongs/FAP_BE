@@ -225,40 +225,14 @@ namespace FAP_BE.DataAccess
         {
             try
             {
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                using (var package = new ExcelPackage())
+                var writer = new StreamWriter(stream);
+
+                foreach (var student in list)
                 {
-                    var worksheet = package.Workbook.Worksheets.Add("StudentData");
-
-                    worksheet.Cells[1, 1].Value = "StudentId";
-                    worksheet.Cells[1, 2].Value = "Rolenumber";
-                    worksheet.Cells[1, 3].Value = "Name";
-                    worksheet.Cells[1, 4].Value = "Username";
-                    worksheet.Cells[1, 5].Value = "Address";
-                    worksheet.Cells[1, 6].Value = "Dob";
-                    worksheet.Cells[1, 7].Value = "Email";
-                    worksheet.Cells[1, 8].Value = "Image";
-                    worksheet.Cells[1, 9].Value = "AbsentPercentage%";
-                    worksheet.Cells[1, 10].Value = "TotalSlots";
-
-                    int row = 2;
-                    foreach (var student in list)
-                    {
-                        worksheet.Cells[row, 1].Value = student.Id;
-                        worksheet.Cells[row, 2].Value = student.RoleNumber;
-                        worksheet.Cells[row, 3].Value = student.Name;
-                        worksheet.Cells[row, 4].Value = student.Username;
-                        worksheet.Cells[row, 5].Value = student.Address;
-                        worksheet.Cells[row, 6].Value = student.Dob.ToString("dd/MM/yyyy");
-                        worksheet.Cells[row, 7].Value = student.Email;
-                        worksheet.Cells[row, 8].Value = student.Image;
-                        worksheet.Cells[row, 9].Value = StudentAbsentPercentage(student.Id);
-                        worksheet.Cells[row, 10].Value = StudentTotalSlots(student.Id);
-                        row++;
-                    }
-
-                    package.SaveAs(stream);
+                    writer.WriteLine($"{student.Id},{student.RoleNumber}");
                 }
+                writer.Flush();
+                stream.Position = 0;
                 return true;
             }
             catch (Exception ex)

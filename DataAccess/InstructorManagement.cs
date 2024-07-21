@@ -164,30 +164,34 @@ namespace FAP_BE.DataAccess
 
                     int metaid = existingInstructor.MetaDataId;
 
-                    var schedules = _context.Schedules.Where(s => s.InstructorId == id);
+                    List<Schedule> schedules = _context.Schedules.Where(s => s.InstructorId == id).ToList();
                     List<Attendance> attendances = new List<Attendance>();
 
-                    foreach (var schedule in schedules)
+                    var tuan = _context.Attendances.Where(a => a.ScheduleId == 1).ToList();
+
+                    foreach (Schedule schedule in schedules)
                     {
-                        attendances.Add(_context.Attendances.FirstOrDefault(a => a.ScheduleId == schedule.Id));
+                        attendances.AddRange(_context.Attendances.Where(a => a.ScheduleId == schedule.Id).ToList());
                     }
 
-                    var courses = _context.Courses.Where(c => c.InstructorId == id);
+                    List<Course> courses = _context.Courses.Where(c => c.InstructorId == id).ToList();
                     List<StudentCourse> studentCourses = new List<StudentCourse>();
 
-                    foreach (var course in courses)
+                    foreach (Course course in courses)
                     {
-                        studentCourses.Add(_context.StudentCourse.FirstOrDefault(sc => sc.CourseId == course.Id));
+                        studentCourses.AddRange(_context.StudentCourse.Where(sc => sc.CourseId == course.Id).ToList());
                     }
 
                     var existingMetaData = _context.MetaData.FirstOrDefault(x => x.MetaDataId == metaid);
                     var existingAccount = _context.Accounts.FirstOrDefault(x => x.MetaDataId == metaid);
 
                     _context.Attendances.RemoveRange(attendances);
+                    _context.SaveChanges();
                     _context.Schedules.RemoveRange(schedules);
                     _context.SaveChanges();
 
                     _context.StudentCourse.RemoveRange(studentCourses);
+                    _context.SaveChanges();
                     _context.Courses.RemoveRange(courses);
                     _context.SaveChanges();
 

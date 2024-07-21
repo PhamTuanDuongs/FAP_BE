@@ -98,7 +98,6 @@ namespace FAP_BE.DataAccess
 
                     if (existingSubject == null) return false;
 
-                    existingSubject.Code = subject.Code;
                     existingSubject.Name = subject.Name;
                     existingSubject.ManageSlot = subject.ManageSlot;
                     _context.SaveChanges();
@@ -124,19 +123,19 @@ namespace FAP_BE.DataAccess
 
                     if (existingSubject == null) return false;
 
-                    var courses = _context.Courses.Where(c => c.Id == sid).ToList();
+                    List<Course> courses = _context.Courses.Where(c => c.Id == sid).ToList();
 
                     List<Schedule> schedules = new List<Schedule>();
                     List<Attendance> attendances = new List<Attendance>();
                     List<StudentCourse> studentCourses = new List<StudentCourse>();
 
-                    foreach (var course in courses)
+                    foreach (Course course in courses)
                     {
                         studentCourses.Add(_context.StudentCourse.FirstOrDefault(sc => sc.CourseId == course.Id));
                         schedules.Add(_context.Schedules.FirstOrDefault(s => s.CourseId == course.Id));
                     }
 
-                    foreach (var schedule in schedules)
+                    foreach (Schedule schedule in schedules)
                     {
                         attendances.Add(_context.Attendances.FirstOrDefault(a => a.ScheduleId == schedule.Id));
                     }

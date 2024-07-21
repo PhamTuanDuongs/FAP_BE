@@ -1,5 +1,6 @@
 ﻿using FAP_BE.DTOs;
 using FAP_BE.Models;
+using System.Text.RegularExpressions;
 
 namespace FAP_BE.Validations
 {
@@ -32,6 +33,14 @@ namespace FAP_BE.Validations
                 var accounts = _context.Accounts.ToList();
 
                 string result = "";
+
+                if (createNewInstructorDTO.Dob >= DateTime.Now) result += "Dob is invalid";
+
+                if (!Regex.IsMatch(createNewInstructorDTO.Email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+                {
+                    result += "Email is invalid";
+                }
+
                 foreach (var student in students)
                 {
                     bool dupplicateCode = student.RoleNumber.ToUpper().Equals(createNewInstructorDTO.RoleNumber.ToUpper());
