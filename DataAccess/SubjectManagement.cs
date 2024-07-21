@@ -123,7 +123,7 @@ namespace FAP_BE.DataAccess
 
                     if (existingSubject == null) return false;
 
-                    List<Course> courses = _context.Courses.Where(c => c.Id == sid).ToList();
+                    List<Course> courses = _context.Courses.Where(c => c.SubjectId == sid).ToList();
 
                     List<Schedule> schedules = new List<Schedule>();
                     List<Attendance> attendances = new List<Attendance>();
@@ -131,13 +131,13 @@ namespace FAP_BE.DataAccess
 
                     foreach (Course course in courses)
                     {
-                        studentCourses.Add(_context.StudentCourse.FirstOrDefault(sc => sc.CourseId == course.Id));
-                        schedules.Add(_context.Schedules.FirstOrDefault(s => s.CourseId == course.Id));
+                        studentCourses.AddRange(_context.StudentCourse.Where(sc => sc.CourseId == course.Id).ToList());
+                        schedules.AddRange(_context.Schedules.Where(s => s.CourseId == course.Id).ToList());
                     }
 
                     foreach (Schedule schedule in schedules)
                     {
-                        attendances.Add(_context.Attendances.FirstOrDefault(a => a.ScheduleId == schedule.Id));
+                        attendances.AddRange(_context.Attendances.Where(a => a.ScheduleId == schedule.Id).ToList());
                     }
 
                     _context.Attendances.RemoveRange(attendances);

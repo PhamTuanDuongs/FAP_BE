@@ -56,6 +56,7 @@ namespace FAP_BE.Controllers
                 rs,
                 Attendances = listAttendance
                     .Where(s => s.StudentId == rs.StudentId)
+                    .OrderBy(o => o.Schedule.Date)
                     .Select(c => new AttendanceDTO
                     {
                         StudentId = c.StudentId,

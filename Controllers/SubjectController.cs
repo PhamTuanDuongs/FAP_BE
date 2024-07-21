@@ -84,7 +84,6 @@ namespace FAP_BE.Controllers
             try
             {
                 if(_subjectRepository.GetSubjectById(id) == null) return NotFound();
-                if(_subjectRepository.GetSubjectByCode(subject.Code) != null) return Conflict("Dupplicate code subject");
                 bool check = _subjectRepository.UpdateSubject(id,subject);
                 if (!check) return Conflict("Update subject fail");
                 return Ok("Update subject successfully");

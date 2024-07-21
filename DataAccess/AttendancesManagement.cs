@@ -193,7 +193,7 @@ namespace FAP_BE.DataAccess
             try
             {
                 // Lấy ngày hiện tại
-                var currentDate = DateTime.UtcNow.Date;
+                var currentDate = DateTime.Now;
 
                 // Lấy toàn bộ lịch dạy của giáo viên trong ngày hiện tại
                 var schedules = await _context.Schedules
